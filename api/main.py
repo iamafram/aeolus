@@ -3,7 +3,7 @@ from api.routes.auth import router as auth_router
 from pipeline.models import init_db
 
 app = FastAPI(
-    title="Aeolus | Marathon Coach API",
+    title="Marathon Coach API",
     description="AI-powered training coach for the NYC Marathon",
     version="0.1.0",
 )
