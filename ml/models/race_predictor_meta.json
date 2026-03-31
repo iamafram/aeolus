@@ -1,0 +1,15 @@
+{
+  "feature_cols": [
+    "weekly_km_4w",
+    "long_run_pace_3avg",
+    "pace_efficiency",
+    "elevation_4w",
+    "consistency_4w",
+    "acwr",
+    "pace_trend"
+  ],
+  "cv_mae_minutes": 21.72,
+  "baseline_mae": 37.51,
+  "n_samples": 72,
+  "target_mean_minutes": 302.1
+}
