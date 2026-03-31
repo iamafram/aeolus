@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from fastapi.responses import RedirectResponse
 from pipeline.strava_client import get_authorization_url, exchange_code_for_token
 from pipeline.models import SessionLocal, Athlete
+from pipeline.ingest import fetch_and_store_activities
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -14,7 +15,6 @@ def strava_login():
 @router.get("/callback")
 def strava_callback(code: str, scope: str = ""):
     token_data = exchange_code_for_token(code)
-
     athlete_data = token_data["athlete"]
     db = SessionLocal()
 
@@ -40,10 +40,19 @@ def strava_callback(code: str, scope: str = ""):
         db.add(athlete)
 
     db.commit()
+
+    stored_token = {
+        "access_token":  token_data["access_token"],
+        "refresh_token": token_data["refresh_token"],
+        "expires_at":    token_data["expires_at"],
+    }
+
+    total = fetch_and_store_activities(stored_token, athlete_data["id"])
     db.close()
 
     return {
-        "message":    "Athlete saved to database",
+        "message":    "Athlete and activities saved",
         "athlete_id": athlete_data["id"],
         "name":       f"{athlete_data['firstname']} {athlete_data['lastname']}",
+        "runs_saved": total,
     }
