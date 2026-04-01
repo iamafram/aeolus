@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from api.routes.auth import router as auth_router
+from api.routes.plan import router as plan_router
+from api.routes.insights import router as insights_router
 from pipeline.models import init_db
 
 app = FastAPI(
@@ -9,6 +11,8 @@ app = FastAPI(
 )
 
 app.include_router(auth_router)
+app.include_router(plan_router)
+app.include_router(insights_router)
 
 
 @app.on_event("startup")

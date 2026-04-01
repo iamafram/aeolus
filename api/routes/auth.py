@@ -50,9 +50,4 @@ def strava_callback(code: str, scope: str = ""):
     total = fetch_and_store_activities(stored_token, athlete_data["id"])
     db.close()
 
-    return {
-        "message":    "Athlete and activities saved",
-        "athlete_id": athlete_data["id"],
-        "name":       f"{athlete_data['firstname']} {athlete_data['lastname']}",
-        "runs_saved": total,
-    }
+    return RedirectResponse(url="http://localhost:8501?page=Dashboard")
