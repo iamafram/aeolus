@@ -80,6 +80,11 @@ st.markdown("""
         font-size: 12px;
         font-weight: 600;
     }
+            
+    .stApp {
+            animation: none !important;
+            transition: none !important;
+    }
 
     /* Plan day card */
     .day-card {
@@ -119,7 +124,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-
+@st.cache_data(ttl=60)
 def fetch_fitness():
     try:
         r = requests.get(f"{API_BASE}/athlete/fitness", timeout=5)
@@ -127,7 +132,7 @@ def fetch_fitness():
     except:
         return None
 
-
+@st.cache_data(ttl=60)
 def fetch_plan():
     try:
         r = requests.get(
@@ -139,7 +144,7 @@ def fetch_plan():
     except:
         return None
 
-
+@st.cache_data(ttl=60)
 def fetch_trends():
     try:
         r = requests.get(f"{API_BASE}/athlete/trends", timeout=5)
@@ -165,8 +170,6 @@ st.markdown(
 )
 st.markdown("---")
 
-refresh_data()
-
 # ── Navigation ──
 page = st.radio(
     "Navigationn",
@@ -182,6 +185,7 @@ st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
 # PAGE 1 — DASHBOARD
 # ══════════════════════════════
 if page == "Dashboard":
+    refresh_data()
     fitness = fetch_fitness()
 
     if not fitness:
