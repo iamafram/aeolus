@@ -8,7 +8,7 @@
     "acwr",
     "pace_trend"
   ],
-  "cv_mae_minutes": 21.72,
+  "cv_mae_minutes": 19.51,
   "baseline_mae": 37.51,
   "n_samples": 72,
   "target_mean_minutes": 302.1
