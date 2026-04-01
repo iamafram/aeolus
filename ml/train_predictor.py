@@ -60,6 +60,7 @@ def train(data_path: str = "data/processed/activities.csv"):
         colsample_bytree=0.8,
         reg_alpha=0.1,
         reg_lambda=1.0,
+        base_score=0.5,
         random_state=42,
         n_jobs=-1,
     )
