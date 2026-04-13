@@ -15,7 +15,7 @@ def refresh_data():
     except Exception as e:
         st.warning(f"Could not refresh data: {e}")
 
-API_BASE = "https://aeolus-production-2b34.up.railway.app"
+API_BASE = "http://localhost:8000"
 RACE_DATE = "2026-11-01"
 
 st.set_page_config(
@@ -129,7 +129,8 @@ def fetch_fitness():
     try:
         r = requests.get(f"{API_BASE}/athlete/fitness", timeout=5)
         return r.json()
-    except:
+    except Exception as e:
+        st.error(f"fetch_fitness error: {e}")
         return None
 
 @st.cache_data(ttl=60)
@@ -185,7 +186,6 @@ st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
 # PAGE 1 — DASHBOARD
 # ══════════════════════════════
 if page == "Dashboard":
-    refresh_data()
     fitness = fetch_fitness()
 
     if not fitness:
@@ -193,45 +193,45 @@ if page == "Dashboard":
         st.stop()
 
     risk = fitness.get("overtraining_risk", "Low")
-    badge = "badge-low" if risk == "Low" else "badge-high"
+    risk_color = "green" if risk == "Low" else "red"
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-label">Predicted finish</div>
-            <div class="metric-value">{fitness.get('predicted_finish', '--')}</div>
-            <div class="metric-sub">NYC Marathon 2026</div>
-        </div>""", unsafe_allow_html=True)
+        st.metric(
+            label="Predicted finish",
+            value=fitness.get("predicted_finish", "--"),
+            help="Your predicted NYC Marathon finish time"
+        )
 
     with col2:
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-label">Overtraining risk</div>
-            <div class="metric-value">
-                <span class="{badge}">{risk}</span>
-            </div>
-            <div class="metric-sub">{fitness.get('risk_confidence', '--')}% confidence</div>
-        </div>""", unsafe_allow_html=True)
+        st.metric(
+            label="Overtraining risk",
+            value=risk,
+            help=f"{fitness.get('risk_confidence', '--')}% confidence"
+        )
 
     with col3:
-        top = fitness.get("top_factor", "--")
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-label">Top factor</div>
-            <div class="metric-value" style="font-size:18px">{top}</div>
-            <div class="metric-sub">Biggest driver today</div>
-        </div>""", unsafe_allow_html=True)
+        st.metric(
+            label="Top factor",
+            value=fitness.get("top_factor", "--"),
+            help="Biggest driver of your prediction today"
+        )
 
-    st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
+    st.markdown("---")
 
     insight = fitness.get("insight", "")
     if insight:
-        st.markdown(
-            f'<div class="insight-box">"{insight}"</div>',
-            unsafe_allow_html=True
-        )
+        st.info(f'"{insight}"')
+
+    st.markdown("---")
+    st.subheader("SHAP breakdown")
+    st.caption("Negative = faster, Positive = slower")
+
+    shap = fitness.get("shap_values", {})
+    for feature, value in sorted(shap.items(), key=lambda x: abs(x[1]), reverse=True):
+        direction = "faster" if value < 0 else "slower"
+        st.write(f"**{feature}** — {value:+.1f} min ({direction})")
 
 
 # ══════════════════════════════
@@ -357,7 +357,7 @@ elif page == "Trends":
             paper_bgcolor="white",
             font=dict(size=12),
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=False, width=800)
         st.caption("Lower is faster. Y-axis shows pace in seconds per km.")
 
 
