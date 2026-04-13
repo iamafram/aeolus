@@ -1,9 +1,9 @@
 # Marathon Coach — AI-Powered Training App
 
-An end-to-end machine learning application that connects to Strava, analyzes your running history, and predicts your marathon finish time with explainable AI.
+An end-to-end machine learning application that connects to Strava analyzes your running history and predicts your marathon finish time with explainable AI.
 
-Built while training for the **NYC Marathon 2026**.
-
+I built this for my future marathons, the next one is the **NYC Marathon** (or probably the **SF Marathon**)
+Aeolus because he's the God of Wind.
 ---
 
 ## Live Demo
@@ -161,19 +161,6 @@ aeolus/
 └── README.md
 ```
 
----
-
-## Interview Highlights
-
-- Trained on **106 real runs** from personal Strava data
-- Uses **ACWR** — a published sports science metric — for injury risk detection
-- **SHAP values** explain every prediction at the feature level
-- **TimeSeriesSplit** prevents temporal data leakage
-- Full **OAuth 2.0** integration with token refresh handling
-- **Dockerized** — runs with one command on any machine
-
----
-
 ## Author
 
-Built by **Afram** — software engineer training for the NYC Marathon 2026.
+Built by **[Afram](https://www.linkedin.com/in/afram-diril/)**
