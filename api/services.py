@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from ml.evaluate import predict_with_explanation
 
 
@@ -66,6 +66,7 @@ def get_phase(weeks_to_race: int) -> str:
 
 
 def format_pace(pace_s_per_km: float) -> str:
+    """Convert seconds per km to mm:ss string."""
     mins = int(pace_s_per_km // 60)
     secs = int(pace_s_per_km % 60)
     return f"{mins}:{secs:02d}"
@@ -73,13 +74,19 @@ def format_pace(pace_s_per_km: float) -> str:
 
 def generate_weekly_plan(race_date: date,
                          data_path: str = "data/processed/activities.csv") -> dict:
+    """
+    Main function — generates this week's training plan.
+    Uses model outputs to adapt the plan automatically.
+    """
     today = date.today()
     weeks_to_race = max(0, (race_date - today).days // 7)
 
+    # Get model predictions
     prediction = predict_with_explanation(data_path=data_path)
     risk        = prediction["overtraining_risk"]
     base_pace   = prediction["predicted_minutes"] * 60 / 42.195
 
+    # Override with recovery week if high risk
     if risk == "High":
         phase    = "recovery"
         template = WEEKLY_TEMPLATES["recovery"]
@@ -87,33 +94,34 @@ def generate_weekly_plan(race_date: date,
         phase    = get_phase(weeks_to_race)
         template = WEEKLY_TEMPLATES[phase]
 
+    # Build daily schedule
     schedule = []
     for day in template:
         if day["type"] == "Rest":
             schedule.append({
-                "day":  day["day"],
-                "type": "Rest",
-                "km":   0,
-                "pace": None,
-                "note": "Rest or light cross-training",
+                "day":   day["day"],
+                "type":  "Rest",
+                "km":    0,
+                "pace":  None,
+                "note":  "Rest or light cross-training",
             })
         else:
             target_pace = base_pace + day["pace_offset"]
             pace_low    = format_pace(target_pace - 10)
             pace_high   = format_pace(target_pace + 10)
             schedule.append({
-                "day":  day["day"],
-                "type": day["type"],
-                "km":   day["km"],
-                "pace": f"{pace_low} – {pace_high} /km",
-                "note": "",
+                "day":   day["day"],
+                "type":  day["type"],
+                "km":    day["km"],
+                "pace":  f"{pace_low} – {pace_high} /km",
+                "note":  "",
             })
 
     total_km = sum(d["km"] for d in schedule)
 
     return {
-        "phase":             phase,
-        "weeks_to_race":     weeks_to_race,
+        "phase":          phase,
+        "weeks_to_race":  weeks_to_race,
         "overtraining_risk": risk,
         "predicted_finish":  prediction["predicted_finish"],
         "top_insight":       prediction["insight"],

@@ -18,11 +18,17 @@ FEATURE_COLS = [
 
 @router.get("/fitness")
 def get_fitness():
+    """
+    Returns ML predictions — finish time, overtraining risk, SHAP insight.
+    """
     return predict_with_explanation()
 
 
 @router.get("/trends")
 def get_trends():
+    """
+    Returns pace trend over last 8 weeks for the dashboard chart.
+    """
     df       = pd.read_csv("data/processed/activities.csv",
                            parse_dates=["date"])
     features = build_feature_set(df)
@@ -39,16 +45,16 @@ def get_trends():
     rows = []
     for _, row in last_8_weeks.iterrows():
         rows.append({
-            "date":      row["date"].strftime("%Y-%m-%d"),
-            "pace":      fmt_pace(row["avg_pace_s_per_km"]),
-            "pace_s":    round(row["avg_pace_s_per_km"], 1),
-            "weekly_km": round(row["weekly_km_4w"], 1),
-            "acwr":      round(row["acwr"], 2),
+            "date":       row["date"].strftime("%Y-%m-%d"),
+            "pace":       fmt_pace(row["avg_pace_s_per_km"]),
+            "pace_s":     round(row["avg_pace_s_per_km"], 1),
+            "weekly_km":  round(row["weekly_km_4w"], 1),
+            "acwr":       round(row["acwr"], 2),
         })
 
     return {
-        "trends":        rows,
-        "best_pace":     fmt_pace(last_8_weeks["avg_pace_s_per_km"].min()),
-        "worst_pace":    fmt_pace(last_8_weeks["avg_pace_s_per_km"].max()),
+        "trends":       rows,
+        "best_pace":    fmt_pace(last_8_weeks["avg_pace_s_per_km"].min()),
+        "worst_pace":   fmt_pace(last_8_weeks["avg_pace_s_per_km"].max()),
         "avg_weekly_km": round(last_8_weeks["weekly_km_4w"].mean(), 1),
     }
