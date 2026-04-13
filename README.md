@@ -2,9 +2,9 @@
 
 An end-to-end machine learning application that connects to Strava analyzes your running history and predicts your marathon finish time with explainable AI.
 
-I built this for my future marathons, the next one is the **NYC Marathon** (or probably the **SF Marathon**)
-Aeolus because he's the God of Wind.
----
+I built this for my future marathons, the next one is the **NYC Marathon** (or probably the **SF Marathon**).
+
+**Aeolus** he's the God of Wind.
 
 ## Live Demo
 
