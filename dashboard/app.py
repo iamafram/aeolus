@@ -15,7 +15,7 @@ def refresh_data():
     except Exception as e:
         st.warning(f"Could not refresh data: {e}")
 
-API_BASE = "https://aeolus-production-2b34.up.railway.app/"
+API_BASE = "https://aeolus-production-2b34.up.railway.app"
 RACE_DATE = "2026-11-01"
 
 st.set_page_config(
